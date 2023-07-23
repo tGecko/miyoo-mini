@@ -83,8 +83,6 @@ def main():
             print(f"{dest_path} too big - aborting. ")
             break
         
-        print(f"output size {os.path.getsize(dest_path)} should be smaller than {partition.size}")
-
         # read in squashed partition
         with open(dest_path, 'rb') as f:
             partfile = f.read()
