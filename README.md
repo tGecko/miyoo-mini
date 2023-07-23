@@ -1,11 +1,12 @@
 # miyoo-mini
 Random collection for the Miyoo Mini/Plus
 
-## Firmware extraction scripts
+## Firmware scripts
 Two scripts, in Python and Powershell, to be used to extract miyoo283/354_fw.img files
 
-The python script can take a directory as an argument, it will extract all the .img files found there, or in the current working directory, if no argument was passed
+One script to edit a miyoo***_fw.img firmware file.
 
-The PowerShells script looks at the current working directory, if it doesn't find any .img files, it shows a folder browser.
+It carves out and unpacks the 3 squashfs partitions, and then waits and lets you edit the files.
+Then it repacks the partitions and surgically places them back into the miyoo***_fw.img file
 
-Both scripts will extract the files into the subdirectory "extracted"
+It creates a backup of the firmware file.
