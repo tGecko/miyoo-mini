@@ -4,8 +4,10 @@ import os
 import re
 import shutil
 import sys
+import time
 
 def main():
+	start = time.time()
 	if len(sys.argv) == 2:
 		folder = sys.argv[1]
 		if not os.path.isdir(folder):
@@ -15,7 +17,7 @@ def main():
 		folder = os.getcwd()
 	
 	print("Looking for .img files in ", folder)
-	img_files = [file for file in os.listdir(folder) if file.endswith('.img')]
+	img_files = [os.path.join(folder, file) for file in os.listdir(folder) if file.endswith('.img')]
 
 	if not img_files:
 		print("No .img files in ", folder)
@@ -23,10 +25,12 @@ def main():
 
 	print("Found .img files:", ' '.join(img_files))
 	print()
+	processedCount = 0
 	for file in img_files:
+		processedCount += 1
 		print("Processing ", file)
-		folder = os.path.join(os.path.dirname(file), "extracted")
-		os.makedirs(folder, exist_ok=True)
+		dest_folder = os.path.join(os.path.dirname(file), "extracted")
+		os.makedirs(dest_folder, exist_ok=True)
 		leaf = os.path.basename(file)
 		script = b''
 
@@ -61,10 +65,11 @@ def main():
 		for i in range(len(partitions)):
 			print(f"\tProcessing partition {partitions[i]} offset 0x{offsets[i]} size 0x{sizes[i]}")
 			output_bytes = rawfile[offsetsdecimal[i]: offsetsdecimal[i] + sizesdecimal[i]]
-			output_path = os.path.join(folder, f"{leaf.split('_')[0]}_{partitions[i]}")
+			output_path = os.path.join(dest_folder, f"{leaf.split('_')[0]}_{partitions[i]}")
 			with open(output_path, 'wb') as f:
 				f.write(output_bytes)
 		print()
-	print("All done!")
+	elapsedTime = time.time() - start
+	print(f"All done! Processed {processedCount} {'file' if processedCount == 1 else 'files'} in {str(round(elapsedTime,2))} seconds.")
 if __name__ == "__main__":
 	main()
