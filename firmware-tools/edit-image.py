@@ -4,7 +4,6 @@ import os
 import re
 import shutil
 import sys
-import time
 
 class Partition:
     def __init__(self, name=""):
@@ -69,7 +68,7 @@ def main():
         os.remove(output_path)
 
     input(f"\nYou can now modify the partitions in {dest_folder}\nPress ENTER when you're done, and the firmware file will be stitched together.\n")
-
+    success = True
     for partition in partitions:
         if not re.search(squashfs_partitions, partition.name):   # only squashfs partitions for now
             continue
@@ -80,9 +79,12 @@ def main():
 
         # check if not too big
         if os.path.getsize(dest_path) > partition.size:
-            print(f"{dest_path} too big")
-            return
+            success = False
+            print(f"{dest_path} too big - aborting. ")
+            break
         
+        print(f"output size {os.path.getsize(dest_path)} should be smaller than {partition.size}")
+
         # read in squashed partition
         with open(dest_path, 'rb') as f:
             partfile = f.read()
@@ -96,7 +98,11 @@ def main():
 
     print("Cleanup")
     shutil.rmtree(dest_folder)
-    print("All done!")
-    
+    if success:
+        print("\nAll done!")
+    else:
+        print("\nFailed! Please start over. Applying backup")
+        shutil.copyfile(f"{img_file}.bak", img_file)
+
 if __name__ == "__main__":
     main()
