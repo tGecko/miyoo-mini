@@ -2,10 +2,13 @@
 Random collection for the Miyoo Mini/Plus
 
 ## Firmware scripts
-Two scripts, in Python and Powershell, to be used to extract miyoo283/354_fw.img files
+Multiple scripts to manipulate miyoo***_fw.img files.
+Run from folder with .img or pass a folder containing .img files as argument.
 
-One script to edit a miyoo***_fw.img firmware file.
+### extract-lcd_init.py
+Carves out the well hidden lcd_init from a given firmware image.
 
+### edit-image.py
 It carves out and unpacks the 3 squashfs partitions, and then waits and lets you edit the files.
 Then it repacks the partitions and surgically places them back into the miyoo***_fw.img file
 
