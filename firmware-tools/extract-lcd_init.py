@@ -5,7 +5,8 @@ import sys
 import time
 import lzma
 import bz2
-
+import tarfile
+from io import BytesIO
 
 def main():
     start = time.time()
@@ -34,9 +35,7 @@ def main():
     for file in img_files:
         processedCount += 1
         print("Processing ", file)
-        dest_folder = os.path.join(os.path.dirname(file), "extracted")
-        os.makedirs(dest_folder, exist_ok=True)
-        leaf = os.path.basename(file)
+        dest_folder = os.path.dirname(file)
         script = b""
 
         # need to open as binary else it errors out
@@ -108,12 +107,14 @@ def main():
                             "bytes",
                         )
                         lcd_init = bz2.decompress(decompressed_kernel)
+
+                        tar_bytes_io = BytesIO(lcd_init)
                         print("\tdecompressed lcd_init, size", len(lcd_init), "bytes")
                         output_path = os.path.join(dest_folder, f"lcd_init-{build}")
-                        print("\twriting lcd_init to file", output_path)
-                        output_path = os.path.join(dest_folder, f"lcd_init-{build}")
-                        with open(output_path, "wb") as f:
-                            f.write(lcd_init)
+                        print("\twriting lcd_init to folder", output_path)
+                        with tarfile.open(fileobj=tar_bytes_io) as tar:
+                            tar.extractall(output_path)
+
                     else:
                         print("\tmangled BZ header not found")
                 else:
